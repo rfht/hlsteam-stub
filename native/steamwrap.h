@@ -11,8 +11,6 @@
 #include <iostream>
 #include <map>
 
-#include <steam/steam_api.h>
-#include <steam/steam_gameserver.h>
 
 typedef vbyte *		vuid;
 #define _UID		_BYTES
@@ -20,17 +18,16 @@ typedef vbyte *		vuid;
 
 void dyn_call_result( vclosure *c, vdynamic *p, bool error );
 void hl_set_uid( vdynamic *out, int64 uid );
-CSteamID hl_to_uid( vuid v );
-vuid hl_of_uid( CSteamID id );
+int hl_to_uid( vuid v );
+vuid hl_of_uid( int id );
 uint64 hl_to_uint64(vuid v);
 vuid hl_of_uint64(uint64 id);
 
-template< class T >
-class CClosureCallResult : public CCallResult<CClosureCallResult<T>,T> {
+class CClosureCallResult {
 	vclosure *closure;
-	void (*on_result)( vclosure *, T *, bool);
+	void (*on_result)( vclosure *, int *, bool);
 public:
-	CClosureCallResult( vclosure *cval, void (*on_result)( vclosure *t, T*, bool) ) {
+	CClosureCallResult( vclosure *cval, void (*on_result)( vclosure *t, int*, bool) ) {
 		this->closure = cval;
 		this->on_result = on_result;
 		hl_add_root(&closure);
@@ -38,7 +35,7 @@ public:
 	~CClosureCallResult() {
 		hl_remove_root(&closure);
 	}
-	void OnResult( T *result, bool onIOError ) {
+	void OnResult( int *result, bool onIOError ) {
 		on_result(closure,result,onIOError);
 		delete this;}
 };
@@ -65,35 +62,35 @@ typedef enum {
 class CallbackHandler {
 private:
 	//SteamLeaderboard_t m_curLeaderboard;
-	std::map<std::string, SteamLeaderboard_t> m_leaderboards;
+	std::map<std::string, int> m_leaderboards;
 public:
 
-	CallbackHandler() :
-#	define EVENT_DECL(name,type) m_##name(this,&CallbackHandler::On##name),
-#	include "events.h"
-		m_leaderboards()
-	{}
+	//CallbackHandler() :
+//#	define EVENT_DECL(name,type) m_##name(this,&CallbackHandler::On##name),
+//#	include "events.h"
+		//m_leaderboards()
+	//{}
 
 #	define EVENT_DECL(name,type) STEAM_CALLBACK(CallbackHandler, On##name, type, m_##name); vdynamic *Encode##name( type *t );
-#	include "events.h"
+//#	include "events.h"
 
 #	define EVENT_IMPL(name,type) vdynamic *CallbackHandler::Encode##name( type *d )
 
 	void FindLeaderboard(const char* name);
-	void OnLeaderboardFound( LeaderboardFindResult_t *pResult, bool bIOFailure);
-	CCallResult<CallbackHandler, LeaderboardFindResult_t> m_callResultFindLeaderboard;
+	void OnLeaderboardFound( int *pResult, bool bIOFailure);
+	//CCallResult<CallbackHandler, LeaderboardFindResult_t> m_callResultFindLeaderboard;
 
 	bool UploadScore(const std::string& leaderboardId, int score, int detail);
-	void OnScoreUploaded( LeaderboardScoreUploaded_t *pResult, bool bIOFailure);
-	CCallResult<CallbackHandler, LeaderboardScoreUploaded_t> m_callResultUploadScore;
+	void OnScoreUploaded( int *pResult, bool bIOFailure);
+	//CCallResult<CallbackHandler, LeaderboardScoreUploaded_t> m_callResultUploadScore;
 
 	bool DownloadScores(const std::string& leaderboardId, int numBefore, int numAfter);
-	void OnScoreDownloaded( LeaderboardScoresDownloaded_t *pResult, bool bIOFailure);
-	CCallResult<CallbackHandler, LeaderboardScoresDownloaded_t> m_callResultDownloadScore;
+	void OnScoreDownloaded( int *pResult, bool bIOFailure);
+	//CCallResult<CallbackHandler, LeaderboardScoresDownloaded_t> m_callResultDownloadScore;
 
 	void RequestGlobalStats();
-	void OnGlobalStatsReceived(GlobalStatsReceived_t* pResult, bool bIOFailure);
-	CCallResult<CallbackHandler, GlobalStatsReceived_t> m_callResultRequestGlobalStats;
+	void OnGlobalStatsReceived(int* pResult, bool bIOFailure);
+	//CCallResult<CallbackHandler, GlobalStatsReceived_t> m_callResultRequestGlobalStats;
 
 };
 
@@ -103,21 +100,21 @@ public:
 	HLValue() {
 		value = (vdynamic*)hl_alloc_dynobj();
 	}
-	void Set( const char *name, CSteamID uid ) {
+	void Set( const char *name, int uid ) {
 		hl_dyn_setp(value, hl_hash_utf8(name), &hlt_uid, hl_of_uid(uid));
 	}
 	void Set( const char *name, uint64 uid ) {
 		hl_dyn_setp(value, hl_hash_utf8(name), &hlt_uid, hl_of_uint64(uid));
 	}
-	void Set( const char *name, uint32 v ) {
-		Set(name,(int)v);
-	}
+	//void Set( const char *name, int v ) {
+		//Set(name,(int)v);
+	//}
 	void Set( const char *name, bool b ) {
 		hl_dyn_seti(value, hl_hash_utf8(name), &hlt_bool, b);
 	}
-	void Set( const char *name, int v ) {
-		hl_dyn_seti(value, hl_hash_utf8(name), &hlt_i32, v);
-	}
+	//void Set( const char *name, int v ) {
+		//hl_dyn_seti(value, hl_hash_utf8(name), &hlt_i32, v);
+	//}
 	void Set(const char *name, double v) {
 		hl_dyn_setd(value, hl_hash_utf8(name), v);
 	}
@@ -137,6 +134,6 @@ extern CallbackHandler *s_callbackHandler;
 void SendEvent(event_type type, bool success, const char *data);
 bool CheckInit();
 
-SteamParamStringArray_t * getSteamParamStringArray(const char * str);
-void deleteSteamParamStringArray(SteamParamStringArray_t * params);
+int * getSteamParamStringArray(const char * str);
+void deleteSteamParamStringArray(int * params);
 void split(const std::string &s, char delim, std::vector<std::string> &elems);

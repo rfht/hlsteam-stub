@@ -1,35 +1,23 @@
 #include "steamwrap.h"
 
 void hl_set_uid( vdynamic *out, int64 uid ) {
-	out->t = &hlt_uid;
-	out->v.ptr = hl_of_uid(CSteamID((uint64)uid));
 }
 
-CSteamID hl_to_uid( vuid v ) {
-	union {
-		vbyte b[8];
-		uint64 v;
-	} data;
-	memcpy(data.b,v,8);
-	return CSteamID(data.v);
+int hl_to_uid( vuid v ) {
+	return 0;
 }
 
 uint64 hl_to_uint64(vuid v) {
-	union {
-		vbyte b[8];
-		uint64 v;
-	} data;
-	memcpy(data.b, v, 8);
-	return data.v;
+	return 0;
 }
 
-vuid hl_of_uid( CSteamID uid ) {
+vuid hl_of_uid( int uid ) {
 	union {
 		vbyte b[8];
 		uint64 v;
 	} data;
-	data.v = uid.ConvertToUint64();
-	return (vuid)hl_copy_bytes(data.b, 8);
+	//data.v = uid.ConvertToUint64();
+	return (vuid)0;
 }
 
 vuid hl_of_uint64(uint64 uid) {
@@ -37,18 +25,11 @@ vuid hl_of_uint64(uint64 uid) {
 		vbyte b[8];
 		uint64 v;
 	} data;
-	data.v = uid;
-	return (vuid)hl_copy_bytes(data.b, 8);
+	//data.v = uid;
+	return (vuid)0;
 }
 
 void dyn_call_result( vclosure *c, vdynamic *p, bool error ) {
-	vdynamic b;
-	vdynamic *args[2];
-	args[0] = p;
-	args[1] = &b;
-	b.t = &hlt_bool;
-	b.v.b = error;
-	hl_dyn_call(c,args,2);
 }
 
 //just splits a string
@@ -69,11 +50,6 @@ void split(const std::string &s, char delim, std::vector<std::string> &elems) {
 vclosure *g_eventHandler = 0;
 
 void SendEvent(event_type type, bool success, const char *data) {
-	if (!g_eventHandler) return;
-	if (g_eventHandler->hasValue)
-		((void(*)(void*, event_type, bool, vbyte*))g_eventHandler->fun)(g_eventHandler->value, type, success, (vbyte*)data);
-	else
-		((void(*)(event_type, bool, vbyte*))g_eventHandler->fun)(type, success, (vbyte*)data);
 }
 
 
@@ -81,62 +57,40 @@ CallbackHandler* s_callbackHandler = NULL;
 static vclosure *s_globalEvent = NULL;
 
 bool CheckInit(){
-	return SteamUser() && SteamUser()->BLoggedOn() && SteamUserStats() && (s_callbackHandler != 0) && (g_eventHandler != 0);
+	return 0;
 }
 
 static void GlobalEvent( int id, vdynamic *v ) {
-	vdynamic i;
-	vdynamic *args[2];
-	i.t = &hlt_i32;
-	i.v.i = id;
-	args[0] = &i;
-	args[1] = v;
-	hl_dyn_call(s_globalEvent, args, 2);
 }
 
 #define EVENT_DECL(name,type) void CallbackHandler::On##name( type *t ) { GlobalEvent(type::k_iCallback, Encode##name(t)); }
 #define GLOBAL_EVENTS
-#include "events.h"
+//#include "events.h"
 #undef GLOBAL_EVENTS
 
-vdynamic *CallbackHandler::EncodeOverlayActivated(GameOverlayActivated_t *d) {
+/*
+vdynamic *CallbackHandler::EncodeOverlayActivated(int *d) {
 	HLValue ret;
 	ret.Set("active", d->m_bActive != 0);
 	return ret.value;
 }
+*/
 
 HL_PRIM bool HL_NAME(init)( vclosure *onEvent, vclosure *onGlobalEvent ){
-	bool result = SteamAPI_Init();
-	if (result)	{
-		g_eventHandler = onEvent;
-		s_callbackHandler = new CallbackHandler();
-		s_globalEvent = onGlobalEvent;
-		hl_add_root(&s_globalEvent);
-	}
-	return result;
+	return 0;
 }
 
-HL_PRIM void HL_NAME(set_notification_position)( ENotificationPosition pos ) {
-	if( !CheckInit() ) return;
-	SteamUtils()->SetOverlayNotificationPosition(pos);
+HL_PRIM void HL_NAME(set_notification_position)( int pos ) {
 }
 
 HL_PRIM void HL_NAME(shutdown)(){
-	SteamAPI_Shutdown();
-	// TODO gc_root
-	g_eventHandler = NULL;
-	delete s_callbackHandler;
-	s_callbackHandler = NULL;
 }
 
 HL_PRIM void HL_NAME(run_callbacks)(){
-	SteamAPI_RunCallbacks();
 }
 
 HL_PRIM bool HL_NAME(open_overlay)(vbyte *url){
 	if (!CheckInit()) return false;
-
-	SteamFriends()->ActivateGameOverlayToWebPage((char*)url);
 	return true;
 }
 
@@ -149,63 +103,61 @@ DEFINE_PRIM(_BOOL, open_overlay, _BYTES);
 //-----------------------------------------------------------------------------------------------------------
 
 HL_PRIM vuid HL_NAME(get_steam_id)(){
-	return hl_of_uid(SteamUser()->GetSteamID());
+	return (vuid)0;
 }
 
 HL_PRIM bool HL_NAME(restart_app_if_necessary)(int appId){
-	return SteamAPI_RestartAppIfNecessary(appId);
+	return 0;
 }
 
 HL_PRIM bool HL_NAME(is_overlay_enabled)(){
-	return SteamUtils()->IsOverlayEnabled();
+	return false;
 }
 
 HL_PRIM bool HL_NAME(boverlay_needs_present)(){
-	return SteamUtils()->BOverlayNeedsPresent();
+	return false;
 }
 
 HL_PRIM bool HL_NAME(is_steam_in_big_picture_mode)(){
-	return SteamUtils()->IsSteamInBigPictureMode();
+	return false;
 }
 
 HL_PRIM bool HL_NAME(is_steam_running)(){
-	return SteamAPI_IsSteamRunning();
+	return false;
 }
 
 HL_PRIM vbyte *HL_NAME(get_current_game_language)(){
 	if (!CheckInit()) return NULL;
-	return (vbyte*)SteamApps()->GetCurrentGameLanguage();
+	return (vbyte*)0;
 }
 
 HL_PRIM bool HL_NAME(is_dlc_installed)( int appid ) {
-	return SteamApps()->BIsDlcInstalled((AppId_t)appid);
+	return 0;
 }
 
 HL_PRIM vbyte *HL_NAME(get_current_beta_name)() {
 	static char name[1024];
 	if (!CheckInit()) return NULL;
-	if (!SteamApps()->GetCurrentBetaName(name, 1024))
-		return NULL;
-	return (vbyte*)name;
+	return NULL;
 }
 
-vdynamic *CallbackHandler::EncodeAuthSessionTicketResponse(GetAuthSessionTicketResponse_t *d) {
+/*
+vdynamic *CallbackHandler::EncodeAuthSessionTicketResponse(int *d) {
 	HLValue ret;
-	ret.Set("authTicket", d->m_hAuthTicket);
-	ret.Set("result", d->m_eResult);
+	//ret.Set("authTicket", d->m_hAuthTicket);
+	//ret.Set("result", d->m_eResult);
 	return ret.value;
 }
+*/
 
 
 HL_PRIM vbyte *HL_NAME(get_auth_ticket)( int *size, int *authTicket ) {
 	vbyte *ticket = hl_alloc_bytes(1024);
-	*authTicket = SteamUser()->GetAuthSessionTicket(ticket,1024,(uint32*)size);
-	return ticket;
+	//*authTicket = SteamUser()->GetAuthSessionTicket(ticket,1024,(uint32*)size);
+	return (vbyte*)"";
 }
 
-HL_PRIM void HL_NAME(cancel_call_result)( CClosureCallResult<int> *m_call ) {
-	m_call->Cancel();
-	delete m_call;
+HL_PRIM void HL_NAME(cancel_call_result)( int *m_call ) {
 }
 
 DEFINE_PRIM(_UID, get_steam_id, _NO_ARG);

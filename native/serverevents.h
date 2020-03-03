@@ -1,13 +1,13 @@
 
 // connect
-EVENT_DECL(ServerConnectFailure, SteamServerConnectFailure_t)
-EVENT_DECL(ServersConnected, SteamServersConnected_t)
-EVENT_DECL(ServersDisconnected, SteamServersDisconnected_t)
+EVENT_DECL(ServerConnectFailure, int)
+EVENT_DECL(ServersConnected, int)
+EVENT_DECL(ServersDisconnected, int)
 
-EVENT_DECL(PolicyResponse, GSPolicyResponse_t)
-EVENT_DECL(ValidateAuthTicketResponse, ValidateAuthTicketResponse_t )
+EVENT_DECL(PolicyResponse, int)
+EVENT_DECL(ValidateAuthTicketResponse, int )
 
-EVENT_DECL(P2PSessionRequest, P2PSessionRequest_t )
-EVENT_DECL(P2PSessionConnectFail, P2PSessionConnectFail_t )
+EVENT_DECL(P2PSessionRequest, int )
+EVENT_DECL(P2PSessionConnectFail, int )
 
 #undef EVENT_DECL

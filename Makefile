@@ -2,7 +2,7 @@ LBITS := $(shell getconf LONG_BIT)
 
 UNAME := $(shell uname)
 
-CFLAGS = -Wall -O3 -I src -I native/include -fPIC -I ../sdk/public
+CFLAGS = -Wall -O3 -I src -I native/include -fPIC -I /usr/local/include
 
 ifndef ARCH
 	ARCH = $(LBITS)
@@ -18,7 +18,7 @@ OS=linux
 CFLAGS += -std=c++0x
 endif
 
-LFLAGS = -lhl -lsteam_api -lstdc++ -L native/lib/$(OS)$(LIBARCH) -L ../sdk/redistributable_bin/$(OS)$(ARCH)
+LFLAGS = -lhl -lstdc++ -L native/lib/$(OS)$(LIBARCH) -L /usr/local/lib
 
 SRC = native/cloud.o native/common.o native/controller.o native/friends.o native/gameserver.o \
 	native/matchmaking.o native/networking.o native/stats.o native/ugc.o
