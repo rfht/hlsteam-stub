@@ -1,21 +1,25 @@
 #include "steamwrap.h"
 
 HL_PRIM int HL_NAME(get_file_count)(){
-	if (!CheckInit()) return -1;
+	printf("%s\n", __func__);
+	//if (!CheckInit()) return -1;
 	return 0;
 }
 
 HL_PRIM int HL_NAME(get_file_size)(vbyte *fileName){
+	printf("%s\n", __func__);
 	if (!CheckInit()) return -1;
 	return 0;
 }
 
 HL_PRIM bool HL_NAME(file_exists)(vbyte *fileName){
+	printf("%s\n", __func__);
 	if (!CheckInit()) return false;
 	return true;
 }
 
 HL_PRIM vbyte *HL_NAME(file_read)(vbyte *fileName, int *len){
+	printf("%s\n", __func__);
 	if (!CheckInit()) return NULL;
 	return NULL;
 	int length = 0;
@@ -26,17 +30,20 @@ HL_PRIM vbyte *HL_NAME(file_read)(vbyte *fileName, int *len){
 }
 
 HL_PRIM bool HL_NAME(file_write)(vbyte *fileName, vbyte *bytes, int length){
+	printf("%s\n", __func__);
 	if (!CheckInit()) return false;
 	if (length <= 0) return false;
 	return true;
 }
 
 HL_PRIM bool HL_NAME(file_delete)(vbyte *fileName){
+	printf("%s\n", __func__);
 	if (!CheckInit()) return false;
 	return true;
 }
 
 static void on_file_shared(vclosure *c, int *result, bool error) {
+	printf("%s\n", __func__);
 }
 
 /*
@@ -48,20 +55,24 @@ HL_PRIM CClosureCallResult<RemoteStorageFileShareResult_t>* HL_NAME(file_share)(
 */
 
 HL_PRIM bool HL_NAME(is_cloud_enabled_for_account)() {
+	printf("%s\n", __func__);
 	if (!CheckInit()) return false;
 	return false;
 }
 
 HL_PRIM bool HL_NAME(is_cloud_enabled_for_app)(){
+	printf("%s\n", __func__);
 	if (!CheckInit()) return false;
 	return false;
 }
 
 HL_PRIM void HL_NAME(set_cloud_enabled_for_app)(bool enabled){
+	printf("%s\n", __func__);
 	if (!CheckInit()) return;
 }
 
 HL_PRIM void HL_NAME(get_quota)( double *total, double *available ){
+	printf("%s\n", __func__);
 	if (!CheckInit()) return;
 }
 

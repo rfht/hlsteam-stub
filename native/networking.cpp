@@ -18,26 +18,32 @@ vdynamic *CallbackHandler::EncodeP2PSessionConnectionFail( P2PSessionConnectFail
 */
 
 HL_PRIM bool HL_NAME(send_p2p_packet)( vuid uid, vbyte *data, int length, int type, int channel ) {
+	printf("%s\n", __func__);
 	return false;
 }
 
 HL_PRIM bool HL_NAME(accept_p2p_session)( vuid uid ) {
+	printf("%s\n", __func__);
 	return false;
 }
 
 HL_PRIM bool HL_NAME(is_p2p_packet_available)( int *msgSize, int channel ) {
+	printf("%s\n", __func__);
 	return false;
 }
 
 HL_PRIM vuid HL_NAME(read_p2p_packet)( vbyte *data, int maxLength, int *length, int channel ) {
+	printf("%s\n", __func__);
 	return (vuid)0;
 }
 
 HL_PRIM vdynamic *HL_NAME(get_p2p_session_data)( vuid uid ) {
+	printf("%s\n", __func__);
 	return nullptr;
 }
 
 HL_PRIM bool HL_NAME(close_p2p_session)( vuid uid ) {
+	printf("%s\n", __func__);
 	return false;
 }
 
