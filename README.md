@@ -1,21 +1,18 @@
-hlsteam
--------
-Simple Haxe wrapper of Steam API for Hashlink. This code is based on [SteamWrap](https://github.com/larsiusprime/SteamWrap)
+hlsteam-stub
+============
 
-#### Current Features:
+Steam API extension for Hashlink, stubbed.
 
-- Achievements & Leaderboards
-- Cloud
-- Workshop / UGC (User Generated Content)
-- Matchmaking / Networking 
-- Steam Controller Support (not well-tested)
-- Stats (not well-tested)
+Based on [hlsteam](https://github.com/HeapsIO/hlsteam) by HeapsIO.
 
-#### Dependencies / Requirements:
+The original is based on [SteamWrap](https://github.com/larsiusprime/SteamWrap).
 
-- Haxe
-- Hashlink 
+Build steam.hdll which can be dropped in as needed.
 
-#### To build steam.hdll from source:
+Build dependencies:
+* HashLink
 
-Run setup.bat (windows) and enter the values it asks you for
+How to build:
+```
+make
+```
